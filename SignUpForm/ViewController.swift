@@ -23,12 +23,18 @@ class ViewController: UIViewController {
     
     @IBOutlet weak var signUpButtonOutlet: UIButton!
     
+ 
+    
     override func viewDidLoad() {
         super.viewDidLoad()
+        UINavigationBar.appearance().barTintColor = #colorLiteral(red: 0.8374180198, green: 0.8374378085, blue: 0.8374271393, alpha: 1)
+
         imageBaseView.isHidden = true
         profilePhoto.isHidden = true
-        
-        
+        companyNameTextField.isHidden = true
+        signUpButtonOutlet.layer.cornerRadius = 15
+        signUpButtonOutlet.layer.borderWidth = 3
+        signUpButtonOutlet.layer.borderColor = #colorLiteral(red: 1, green: 1, blue: 1, alpha: 1)
        imageBaseView.layer.cornerRadius = 40
        imageBaseView.layer.borderColor = UIColor.lightGray.cgColor
        imageBaseView.layer.borderWidth = 0.5
@@ -70,15 +76,9 @@ class ViewController: UIViewController {
                     var status: String = (json["status"] as! NSString) as String
                     print(status)
                     if status == "success" {
-                        self.alertView(title: "Success", message: "You have been registered succesfully")
-                        self.fNameTextFiled.text = ""
-                        self.lNameTextFiled.text = ""
-                        self.Tel.text = ""
-                        self.Mobile.text = ""
-                        self.emailTextField.text = ""
-                        self.companyNameTextField.text = ""
+                        self.alertView(titleM: "Success", message: "You have been registered succesfully")
                     } else {
-                        self.alertView(title: "Faild", message: "registration Faild try again")
+                        self.alertView(titleM: "Faild", message: "registration Faild try again")
                     }
                     
                 }catch {
@@ -105,45 +105,42 @@ class ViewController: UIViewController {
     
         
         guard FName != "" else {
-            alertView(title: "First Name", message: "Please check First Name is Empty")
+            alertView(titleM: "First Name", message: "Please check First Name is Empty")
             return
         }
         
         guard LName != "" else {
-            alertView(title: "Last Name", message: "Please check Last Name is Empty")
+            alertView(titleM: "Last Name", message: "Please check Last Name is Empty")
             return
         }
          var validtel = tel?.isPhoneNumber
         guard  validtel != false else {
-            alertView(title: "Telephone Field", message: "Please check Telephone field is Empty")
+            alertView(titleM: "Telephone Field", message: "Please check Telephone field is Empty")
             return
         }
         
         guard mobile != "" else {
-            alertView(title: "Mobile Field", message: "Please check Mobile field is Empty")
+            alertView(titleM: "Mobile Field", message: "Please check Mobile field is Empty")
             return
         }
         
        var validMob = mobile?.isPhoneNumber
         guard validMob != false else {
-            alertView(title: "Invalid Mobile No", message: "Please check Mobile no isn't valid")
+            alertView(titleM: "Invalid Mobile No", message: "Please check Mobile no isn't valid")
             return
         }
       
       
         guard email != "" else {
-            alertView(title: "Email", message: "Please check Email field is Empty")
+            alertView(titleM: "Email", message: "Please check Email field is Empty")
             return
         }
         
         guard (email?.isValidEmail())! else {
-            alertView(title: "Invalid Email", message: "Please check Email ID isn't correct")
+            alertView(titleM: "Invalid Email", message: "Please check Email ID isn't correct")
             return
         }
-        guard companyName != "" else {
-            alertView(title: "Company Field", message: "Please check Comapny field is Empty")
-            return
-        }
+      
         
         
        
@@ -153,9 +150,19 @@ class ViewController: UIViewController {
     }
     
     // Alert View which is call in signUpButtonPressed Button
-    func alertView(title: String, message: String) {
-        let alert = UIAlertController(title: title, message: message, preferredStyle: .alert)
+    func alertView(titleM: String, message: String) {
+        let alert = UIAlertController(title: titleM, message: message, preferredStyle: .alert)
         let okay = UIAlertAction(title: "OK", style: .default, handler: { action in
+            if titleM == "Success" {
+                print("This was success")
+                self.fNameTextFiled.text = ""
+                self.lNameTextFiled.text = ""
+                self.Tel.text = ""
+                self.Mobile.text = ""
+                self.emailTextField.text = ""
+                self.companyNameTextField.text = ""
+                
+            }
         })
 //        let cancle = UIAlertAction(title: "cancle", style: .cancel, handler: { (action) in
 //
