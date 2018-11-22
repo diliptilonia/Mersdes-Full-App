@@ -8,6 +8,13 @@
 
 import UIKit
 
+
+var fName:String = ""
+var lName:String = ""
+var tPhone:String = ""
+var moNO:String = ""
+var eID:String = ""
+
 class ViewController: UIViewController {
     
    
@@ -23,7 +30,10 @@ class ViewController: UIViewController {
     
     @IBOutlet weak var signUpButtonOutlet: UIButton!
     
- 
+    override func viewWillAppear(_ animated: Bool) {
+        super.viewWillAppear(animated);
+        self.navigationController?.isNavigationBarHidden = true
+    }
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -50,48 +60,14 @@ class ViewController: UIViewController {
 
     }
     
-    func postAction() {
-        let Url = String(format: "http://13.126.65.0/api/insert.php")
-        guard let serviceUrl = URL(string: Url) else { return }
-        let parameterDictionary = ["first_name" : fNameTextFiled.text, "last_name" : lNameTextFiled.text, "mobile" : Mobile.text, "telephone" : Tel.text, "email" : emailTextField.text, "company_name" : companyNameTextField.text]
-        var request = URLRequest(url: serviceUrl)
-        request.httpMethod = "POST"
-        request.setValue("Application/json", forHTTPHeaderField: "Content-Type")
-        guard let httpBody = try? JSONSerialization.data(withJSONObject: parameterDictionary, options: []) else {
-            return
-        }
-        request.httpBody = httpBody
-        
-        let session = URLSession.shared
-        session.dataTask(with: request) { (data, response, error) in
-            if let response = response {
-                print("This is reponce\(response)")
-            }
-           
-
-            if let data = data {
-                do {
-                    let json: [String: Any] = try JSONSerialization.jsonObject(with: data, options: []) as! [String : Any]
-                    print("This is \(json)")
-                    var status: String = (json["status"] as! NSString) as String
-                    print(status)
-                    if status == "success" {
-                        self.alertView(titleM: "Success", message: "You have been registered succesfully")
-                    } else {
-                        self.alertView(titleM: "Faild", message: "registration Faild try again")
-                    }
-                    
-                }catch {
-                    print(error)
-                }
-            }
-            }.resume()
-    }
+ 
     
     
 
    
     @IBAction func signUpButtonPressed(_ sender: UIButton) {
+        
+        
         let FName = fNameTextFiled.text
         let LName = lNameTextFiled.text
         let tel = Tel.text
@@ -100,9 +76,9 @@ class ViewController: UIViewController {
         let companyName = companyNameTextField.text
         
         // password lenght count
-       // let passLenght = password1?.count
+        // let passLenght = password1?.count
         
-    
+        
         
         guard FName != "" else {
             alertView(titleM: "First Name", message: "Please check First Name is Empty")
@@ -113,7 +89,7 @@ class ViewController: UIViewController {
             alertView(titleM: "Last Name", message: "Please check Last Name is Empty")
             return
         }
-         var validtel = tel?.isPhoneNumber
+        var validtel = tel?.isPhoneNumber
         guard  validtel != false else {
             alertView(titleM: "Telephone Field", message: "Please check Telephone field is Empty")
             return
@@ -124,13 +100,13 @@ class ViewController: UIViewController {
             return
         }
         
-       var validMob = mobile?.isPhoneNumber
+        var validMob = mobile?.isPhoneNumber
         guard validMob != false else {
             alertView(titleM: "Invalid Mobile No", message: "Please check Mobile no isn't valid")
             return
         }
-      
-      
+        
+        
         guard email != "" else {
             alertView(titleM: "Email", message: "Please check Email field is Empty")
             return
@@ -140,12 +116,21 @@ class ViewController: UIViewController {
             alertView(titleM: "Invalid Email", message: "Please check Email ID isn't correct")
             return
         }
-      
+        print("This is to test diffrence")
+        print("This button clicked ")
+        let vc = UIStoryboard.init(name: "Main", bundle: Bundle.main).instantiateViewController(withIdentifier: "cameraPickerVC") as! cameraPickerVC
         
+//        let qrVC = UIStoryboard.init(name: "Main", bundle: Bundle.main).instantiateViewController(withIdentifier: "qrCodeVC") as! qrCodeVC
+        fName = fNameTextFiled.text!
+        lName = lNameTextFiled.text!
+        tPhone = Tel.text!
+        moNO = Mobile.text!
+        eID = emailTextField.text!
         
-       
+        self.navigationController?.pushViewController(vc, animated: true)
+
         
-        postAction()
+//        postAction()
 
     }
     
