@@ -8,6 +8,7 @@
 
 import UIKit
 import CoreImage
+import QRCode
 
 class qrCodeVC: UIViewController {
 
@@ -30,7 +31,7 @@ class qrCodeVC: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         designLabels()
-        
+        uiDesign()
         lastName.isHidden = true
         clickedImage.image = sendImage
                 let imageData: Data? = UIImageJPEGRepresentation(sendImage, 0.4)
@@ -47,9 +48,9 @@ class qrCodeVC: UIViewController {
     print(qrCodeString)
         
         
-//        let Url = String(format: "http://13.126.65.0/api/insert.php")
+        let Url = String(format: "http://13.126.65.0/api/insert.php")
 
-        let Url = String(format: "https://www.rayqube.com/api/insert.php")
+//        let Url = String(format: "https://www.rayqube.com/api/insert.php")
         guard let serviceUrl = URL(string: Url) else { return }
         let parameterDictionary: [String: Any] = ["insert": "1","first_name" : firstName.text!, "last_name" : lastName.text, "mobile" : mobileNO.text, "telephone" : tel.text, "email" : emailID.text, "image": imageStr]
 //        print("This is parameterDictionary \(parameterDictionary)")
@@ -92,14 +93,23 @@ class qrCodeVC: UIViewController {
                                 return
                             }
                             let data = idASString.data(using: String.Encoding.isoLatin1, allowLossyConversion: false)
-                            
+
                             let filter = CIFilter(name: "CIQRCodeGenerator")
-                            
+
                             filter!.setValue(data, forKey: "inputMessage")
                             filter!.setValue("Q", forKey: "inputCorrectionLevel")
-                            
+
                             self.qrcodeImage = filter!.outputImage
                             self.imgQRCode.image = UIImage(ciImage: self.qrcodeImage)
+                            
+//                            self.imgQRCode.image = {
+//                                var qrCode = QRCode(idASString)!
+//                                qrCode.size = self.imgQRCode.bounds.size
+//                                qrCode.color = CIColor(rgba: "f1c40f")
+//                                qrCode.backgroundColor = CIColor(rgba: "000")
+//                                return qrCode.image
+//                            }()
+                        
                             
                         }
                         //                        self.alertView(titleM: "Success", message: "You have been registered succesfully")
@@ -139,6 +149,13 @@ class qrCodeVC: UIViewController {
         sender.layer.cornerRadius = 7
         sender.layer.borderWidth = 1
         sender.layer.borderColor = #colorLiteral(red: 0, green: 0, blue: 0, alpha: 1)
+    }
+    
+    func uiDesign() {
+        self.clickedImage.layer.cornerRadius = clickedImage.frame.width/2.0
+        self.clickedImage.clipsToBounds = true
+        clickedImage.layer.borderColor = #colorLiteral(red: 0, green: 0, blue: 0, alpha: 1)
+        clickedImage.layer.borderWidth = 1
     }
 
 
