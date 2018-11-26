@@ -30,6 +30,12 @@ class ViewController: UIViewController {
     
     @IBOutlet weak var signUpButtonOutlet: UIButton!
     
+    var localFname:String = ""
+    var localNamme:String = ""
+    var localTelphone:String = ""
+    var localMoboeNO:String = ""
+    var localEmailID:String = ""
+    
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated);
         self.navigationController?.isNavigationBarHidden = true
@@ -38,6 +44,11 @@ class ViewController: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         UINavigationBar.appearance().barTintColor = #colorLiteral(red: 0.8374180198, green: 0.8374378085, blue: 0.8374271393, alpha: 1)
+        fNameTextFiled.text = localFname
+        lNameTextFiled.text = localNamme
+        Tel.text = localTelphone
+        Mobile.text = localMoboeNO
+        emailTextField.text = localEmailID
 
         imageBaseView.isHidden = true
         profilePhoto.isHidden = true

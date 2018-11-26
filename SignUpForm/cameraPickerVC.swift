@@ -16,14 +16,15 @@ class cameraPickerVC: UIViewController, UIImagePickerControllerDelegate, UINavig
 //    let imagePicker = UIImagePickerController()
     
     
+    @IBOutlet weak var backButtonOutlet: UIButton!
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated);
-        self.navigationController?.isNavigationBarHidden = false
+        backButtonOutlet.isHidden = true
+//        self.navigationController?.isNavigationBarHidden = false
     }
 
     override func viewDidLoad() {
         super.viewDidLoad()
-        
 
 
     }
@@ -48,7 +49,10 @@ class cameraPickerVC: UIViewController, UIImagePickerControllerDelegate, UINavig
     {
         if let image = info[UIImagePickerControllerOriginalImage] as? UIImage
         {
-            myImageView.image = image
+           
+            let flippedImage = UIImage(cgImage: image.cgImage!, scale: image.scale, orientation:.leftMirrored)
+
+            myImageView.image = flippedImage
         }
         else
         {
@@ -67,7 +71,11 @@ class cameraPickerVC: UIViewController, UIImagePickerControllerDelegate, UINavig
     }
     
   
-
+    @IBAction func backButton(_ sender: UIButton) {
+        let vc = UIStoryboard.init(name: "Main", bundle: Bundle.main).instantiateViewController(withIdentifier: "ViewController") as! ViewController
+        self.navigationController?.pushViewController(vc, animated: true)
+    }
+    
 }
 
 
