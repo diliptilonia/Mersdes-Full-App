@@ -14,7 +14,10 @@ import QRCoder
 class qrCodeVC: UIViewController {
 
     let window: UIWindow! = UIApplication.shared.keyWindow
-
+    @IBOutlet weak var editOutlet: UIButton!
+    @IBOutlet weak var submitOutlet: UIButton!
+    @IBOutlet weak var backOutlet: UIButton!
+    
     @IBOutlet weak var screenShotPreview: UIImageView!
     @IBOutlet weak var emailOutlet: UIButton!
     @IBOutlet weak var screenShotOutlet: UIButton!
@@ -31,6 +34,10 @@ class qrCodeVC: UIViewController {
     @IBOutlet weak var mobileNO: UILabel!
     @IBOutlet weak var emailID: UILabel!
     
+    var idTogenCode = String()
+    
+    var imageForPrint = UIImage()
+    
     var qrcodeImage: CIImage!
     var qrCodeString = String()
     
@@ -41,6 +48,7 @@ class qrCodeVC: UIViewController {
         screenShotOutlet.isHidden = true
         printOutlet.isHidden = true
         screenShotPreview.isHidden = true
+        
     }
     
     override func viewDidLoad() {
@@ -71,14 +79,43 @@ class qrCodeVC: UIViewController {
 
     
     func alertView(titleM: String, message: String) {
-        let alert = UIAlertController(title: titleM, message: message, preferredStyle: .alert)
-        let okay = UIAlertAction(title: "OK", style: .default, handler: { action in
-    
-        })
-        
-        alert.addAction(okay)
-        //        alert.addAction(cancle)
-        self.present(alert, animated: true, completion: nil)
+        if message == "You have been registered succesfully" {
+            print("THis is in succesfully alet")
+            
+            
+            let alert = UIAlertController(title: titleM, message: message, preferredStyle: .alert)
+            let okay = UIAlertAction(title: "OK", style: .default, handler: { action in
+                let generator = QRCodeGenerator()
+                DispatchQueue.main.async {
+                    self.imgQRCode.image = generator.createImage(value: self.idTogenCode, size: CGSize(width: 200, height: 200))
+                
+                self.emailOutlet.isHidden = true
+                self.screenShotOutlet.isHidden = true
+                self.printOutlet.isHidden = true
+                
+                self.imageForPrint = self.window.capture()
+                    
+                    self.emailOutlet.isHidden = false
+                    self.screenShotOutlet.isHidden = false
+                    self.printOutlet.isHidden = false
+                    
+                }
+               
+            })
+            
+            alert.addAction(okay)
+            //        alert.addAction(cancle)
+            self.present(alert, animated: true, completion: nil)
+        } else {
+            let alert = UIAlertController(title: titleM, message: message, preferredStyle: .alert)
+            let okay = UIAlertAction(title: "OK", style: .default, handler: { action in
+                
+            })
+            
+            alert.addAction(okay)
+            self.present(alert, animated: true, completion: nil)
+        }
+      
     }
     
     func designLabels() {
@@ -156,20 +193,21 @@ class qrCodeVC: UIViewController {
                     print("ID from server \(self.idFromServer)")
                     let idASString = String(self.idFromServer)
                     if status == "success" {
-                        //                        self.alertView(titleM: "Success", message: "You have been registered succesfully")
+//                                                self.alertView(titleM: "Success", message: "You have been registered succesfully")
                         
                         if self.qrcodeImage == nil {
                             if idASString == "" {
                                 return
                             }
+                            self.idTogenCode = idASString
                             
-                            let generator = QRCodeGenerator()
-                            DispatchQueue.main.async {
-                                self.imgQRCode.image = generator.createImage(value: idASString, size: CGSize(width: 200, height: 200))
-                                self.emailOutlet.isHidden = false
-                                self.screenShotOutlet.isHidden = false
-                                self.printOutlet.isHidden = false
-                            }
+//                            let generator = QRCodeGenerator()
+//                            DispatchQueue.main.async {
+//
+//                                self.emailOutlet.isHidden = false
+//                                self.screenShotOutlet.isHidden = false
+//                                self.printOutlet.isHidden = false
+//                            }
                             
                             
                             
@@ -186,6 +224,9 @@ class qrCodeVC: UIViewController {
             }
             }.resume()
         
+        editOutlet.isHidden = true
+        submitOutlet.isHidden = true
+        backOutlet.isHidden = true
         
           self.alertView(titleM: "Success", message: "You have been registered succesfully")
         
@@ -237,7 +278,7 @@ class qrCodeVC: UIViewController {
         let firstActivityItem = "Text you want"
         let secondActivityItem : NSURL = NSURL(string: "http//:urlyouwant")!
         // If you want to put an image
-        let image : UIImage = screenShotPreview.image!
+        let image : UIImage = imageForPrint
         
         let activityViewController : UIActivityViewController = UIActivityViewController(
             activityItems: [firstActivityItem, secondActivityItem, image], applicationActivities: nil)
@@ -262,11 +303,46 @@ class qrCodeVC: UIViewController {
         ]
         
         self.present(activityViewController, animated: true, completion: nil)
+ }
+    
+    @IBAction func sendEmail(_ sender: UIButton) {
+        let name = self.fullName
+        let email = emailID.text!
+        let image = self.imageForPrint
         
+        let imageData: Data? = UIImageJPEGRepresentation(image, 0.4)
+        let imageStr = imageData?.base64EncodedString(options: .lineLength64Characters) ?? ""
         
-       
+        let Url = String(format: "http://rayqube.com/api/email.php")
+        guard let serviceUrl = URL(string: Url) else { return }
+        let parameterDictionary = ["name" : self.fullName, "email" : email, "image": imageStr]
+        var request = URLRequest(url: serviceUrl)
+        request.httpMethod = "POST"
+        request.setValue("Application/json", forHTTPHeaderField: "Content-Type")
+        guard let httpBody = try? JSONSerialization.data(withJSONObject: parameterDictionary, options: []) else {
+            return
+        }
+        request.httpBody = httpBody
+        
+        let session = URLSession.shared
+        session.dataTask(with: request) { (data, response, error) in
+            if let response = response {
+//                print(response)
+            }
+            if let data = data {
+                do {
+                    let json = try JSONSerialization.jsonObject(with: data, options: [])
+                    print("THis is in email button \(json)")
+                }catch {
+                    print(error)
+                }
+            }
+            }.resume()
 
+        
+        
     }
+    
     
 }
 
@@ -322,7 +398,7 @@ extension qrCodeVC :  UIImagePickerControllerDelegate  {
             
             print("Saved Successfully image")
             DispatchQueue.main.async {
-                self.screenShotPreview.isHidden = false
+//                self.screenShotPreview.isHidden = false
                 self.screenShotPreview.image = image
             }
         }
